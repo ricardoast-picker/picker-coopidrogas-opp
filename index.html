@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opportunity Assessment — Coopidrogas × Picker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: hsl(212 100% 97%); --card: hsl(0 0% 100%); --border: hsl(214 33% 91%);
+      --text: hsl(229 35% 16%); --sub: hsl(222 18% 38%); --muted: hsl(216 30% 60%);
+      --celeste: hsl(193 100% 45%); --celeste-dim: hsl(193 100% 45% / .12); --celeste-mid: hsl(193 100% 45% / .3);
+      --green: hsl(162 100% 36%); --green-dim: hsl(162 100% 44% / .13); --green-mid: hsl(162 100% 44% / .3); --green-text: hsl(162 100% 28%);
+      --amber: hsl(43 100% 45%); --amber-bg: hsl(43 100% 67% / .15); --amber-mid: hsl(43 100% 45%/.3);
+      --red: hsl(346 100% 45%); --red-bg: hsl(346 100% 63% / .1); --red-mid: hsl(346 100% 45%/.25);
+    }
+    html, body { height: 100%; background: var(--bg); font-family: 'Montserrat', sans-serif; color: var(--text); overflow: hidden; }
+    #deck { width: 100vw; height: 100vh; position: relative; }
+    .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 36px 64px; opacity: 0; transform: translateX(36px); transition: opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1); pointer-events: none; overflow: hidden; background: var(--bg); }
+    .slide.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+    .slide.exit { opacity: 0; transform: translateX(-36px); }
+    #nav { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; z-index: 100; }
+    .nav-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; box-shadow: 0 1px 4px hsl(229 35% 16% / .08); }
+    .nav-btn:hover { border-color: var(--celeste); color: var(--celeste); }
+    .nav-btn:disabled { opacity: .35; cursor: default; }
+    .nav-btn svg { width: 14px; height: 14px; }
+    #indicators { display: flex; gap: 6px; align-items: center; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all .25s; cursor: pointer; }
+    .dot.on { background: var(--celeste); width: 20px; border-radius: 3px; }
+    #slide-num { position: fixed; top: 18px; right: 24px; font-size: 11px; color: var(--muted); letter-spacing: .05em; font-weight: 600; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; border-radius: 4px; padding: 4px 12px; margin-bottom: 10px; }
+    .tag.blue { color: var(--celeste); border: 1px solid var(--celeste-mid); background: var(--celeste-dim); }
+    .tag.green { color: var(--green-text); border: 1px solid var(--green-mid); background: var(--green-dim); }
+    .tag.amber { color: hsl(43 100% 28%); border: 1px solid var(--amber-mid); background: var(--amber-bg); }
+    .tag.red { color: var(--red); border: 1px solid var(--red-mid); background: var(--red-bg); }
+    h2 { font-size: clamp(18px, 2.2vw, 28px); font-weight: 700; line-height: 1.18; }
+    .content { width: 100%; max-width: 1100px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .lbl { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+    .stat { font-size: clamp(26px, 3vw, 40px); font-weight: 900; }
+    .row { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; font-weight: 500; color: var(--sub); line-height: 1.45; margin-bottom: 6px; }
+    .dot-r { min-width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .q-block { background: var(--card); border-left: 3px solid var(--celeste); border-radius: 0 10px 10px 0; padding: 10px 14px; margin-bottom: 7px; }
+    .q-block .q-cat { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--celeste); margin-bottom: 4px; }
+    .q-block ul { list-style: none; }
+    .q-block ul li { font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.45; margin-bottom: 3px; padding-left: 14px; position: relative; }
+    .q-block ul li::before { content: "→"; position: absolute; left: 0; color: var(--celeste); font-size: 10px; top: 1px; }
+    .q-block.amber { border-color: var(--amber); }
+    .q-block.amber .q-cat { color: hsl(43 100% 28%); }
+    .q-block.amber ul li::before { color: var(--amber); }
+    .q-block.red { border-color: var(--red); }
+    .q-block.red .q-cat { color: var(--red); }
+    .q-block.red ul li::before { color: var(--red); }
+    .q-block.green { border-color: var(--green); }
+    .q-block.green .q-cat { color: var(--green-text); }
+    .q-block.green ul li::before { color: var(--green); }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge.g { background: var(--green-dim); color: var(--green-text); border: 1px solid var(--green-mid); }
+    .badge.a { background: var(--amber-bg); color: hsl(43 100% 28%); border: 1px solid var(--amber-mid); }
+    .badge.r { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-mid); }
+    .badge.b { background: var(--celeste-dim); color: var(--celeste); border: 1px solid var(--celeste-mid); }
+    table.med { width: 100%; border-collapse: collapse; }
+    table.med th { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 6px 10px; text-align: left; border-bottom: 1.5px solid var(--border); }
+    table.med td { font-size: 12.5px; font-weight: 500; padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--sub); vertical-align: top; }
+    table.med td:first-child { font-weight: 700; color: var(--text); }
+  </style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ═══ SLIDE 1 · COVER ═══ -->
+<div class="slide active">
+  <div class="content" style="display:flex;flex-direction:column;gap:24px;max-width:940px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:13px;font-weight:800;letter-spacing:.07em;color:var(--celeste);">PICKER</span>
+      <span style="color:var(--border);font-size:16px;">×</span>
+      <span style="font-size:13px;font-weight:700;color:var(--sub);letter-spacing:.06em;">COOPIDROGAS — OPPORTUNITY ASSESSMENT</span>
+    </div>
+    <div>
+      <div class="tag blue" style="margin-bottom:14px;">Sesión 2 · Demo + Discovery · 1 jul 2026 · 11am CO</div>
+      <h2 style="font-size:clamp(24px,3vw,42px);font-weight:800;line-height:1.1;">Camilo ya quiere el orquestador.<br/><span style="color:var(--celeste);">Mañana hay que demostrar que somos el indicado.</span></h2>
+      <div style="width:64px;height:4px;background:var(--celeste);border-radius:2px;margin-top:16px;"></div>
+    </div>
+    <!-- STATS CONFIRMADOS -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+      <div class="card" style="padding:14px 16px;">
+        <div class="lbl">Pain confirmado</div>
+        <div class="stat" style="color:var(--red);font-size:32px;">20–30</div>
+        <div style="font-size:11px;color:var(--sub);font-weight:600;margin-top:3px;">min de espera hora pico (6–8pm)</div>
+      </div>
+      <div class="card" style="padding:14px 16px;background:var(--amber-bg);border-color:var(--amber-mid);">
+        <div class="lbl" style="color:hsl(43 100% 28%);">Techo de costo</div>
+        <div class="stat" style="color:hsl(43 100% 28%);font-size:30px;">8–10K</div>
+        <div style="font-size:11px;color:var(--sub);font-weight:600;margin-top:3px;">COP por envío · no negociable</div>
+      </div>
+      <div class="card" style="padding:14px 16px;">
+        <div class="lbl">Ticket promedio</div>
+        <div class="stat" style="font-size:30px;">70–100K</div>
+        <div style="font-size:11px;color:var(--sub);font-weight:600;margin-top:3px;">COP · domicilios asociados</div>
+      </div>
+      <div class="card" style="padding:14px 16px;background:var(--green-dim);border-color:var(--green-mid);">
+        <div class="lbl" style="color:var(--green-text);">Señal de compra</div>
+        <div style="font-size:13px;font-weight:900;color:var(--green-text);line-height:1.3;margin-top:6px;">"Justamente estábamos buscando un orquestador" ✅</div>
+        <div style="font-size:10px;color:var(--sub);margin-top:4px;font-weight:600;">— Camilo Torres, sesión 25 jun</div>
+      </div>
+    </div>
+    <!-- PERSONAS + ALERTA -->
+    <div class="grid2" style="gap:14px;">
+      <div class="card" style="padding:14px 18px;">
+        <div class="lbl">En la sesión de mañana</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--celeste-dim);border:2px solid var(--celeste-mid);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🎯</div>
+            <div><div style="font-size:13px;font-weight:800;">Jhonathan "Camilo" Torres</div><div style="font-size:11px;color:var(--muted);">Dir. Ecommerce · Champion confirmado</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--amber-bg);border:2px solid var(--amber-mid);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">❓</div>
+            <div><div style="font-size:13px;font-weight:800;">Persona desconocida</div><div style="font-size:11px;color:hsl(43 100% 28%);font-weight:700;">Llegó el miércoles — puede ser Economic Buyer. Preguntar quién es y su rol ANTES de arrancar la demo.</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--text);border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--celeste);">Objetivo de mañana</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--celeste);flex-shrink:0;"></div><span style="font-size:12.5px;font-weight:700;color:white;">Demostrar velocidad de asignación en tiempo real</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--celeste);flex-shrink:0;"></div><span style="font-size:12.5px;font-weight:700;color:white;">Mostrar multi-nivel HQ admin + droguería operativa</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--celeste);flex-shrink:0;"></div><span style="font-size:12.5px;font-weight:700;color:white;">Cerrar los datos que faltan para la propuesta</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;border-radius:50%;background:hsl(162 80% 60%);flex-shrink:0;"></div><span style="font-size:12.5px;font-weight:700;color:hsl(162 80% 70%);">Calificar a la persona desconocida</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 2 · LO QUE CONFIRMAMOS EN SESIÓN 1 ═══ -->
+<div class="slide">
+  <div class="content" style="display:flex;flex-direction:column;gap:13px;">
+    <div>
+      <div class="tag green">Sesión 1 · 25 jun 2026</div>
+      <h2>Lo que ya sabemos. No volver a preguntar esto mañana.</h2>
+    </div>
+    <div class="grid2" style="gap:14px;align-items:start;">
+      <!-- LEFT -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card" style="padding:14px 18px;border-top:3px solid var(--red);">
+          <div class="lbl" style="color:var(--red);">El pain — confirmado y cuantificado</div>
+          <div style="margin-top:8px;background:var(--red-bg);border:1px solid var(--red-mid);border-radius:10px;padding:12px 14px;">
+            <div style="font-size:13.5px;font-weight:800;color:var(--red);line-height:1.4;">En hora pico (6–8pm) piden delivery y pasan <strong>20–30 min sin asignación</strong> porque usan un solo proveedor. Las droguerías pierden la venta o el cliente se va.</div>
+          </div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+            <div class="row"><div class="dot-r" style="background:var(--red);"></div><span>Usan MU, Peebox, Quick — cada uno por separado, sin orquestación</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--red);"></div><span>RapiCargo en proceso de integrar — pero sigue siendo 1 a la vez</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--amber);"></div><span>Lopido.com: marketplace propio — <strong>no resuelve la asignación en tiempo real</strong></span></div>
+          </div>
+        </div>
+        <div class="card" style="padding:14px 18px;">
+          <div class="lbl">Modelo de negocio y facturación</div>
+          <div style="margin-top:8px;background:var(--bg);border-radius:8px;padding:11px 14px;font-size:13px;font-weight:600;color:var(--sub);line-height:1.5;">Coopidrogas paga la <strong style="color:var(--text);">factura maestra</strong> al proveedor → rebaja internamente a cada asociado lo que usó. <span style="color:var(--celeste);font-weight:700;">Picker replica exactamente este modelo.</span></div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;">
+            <div class="row"><div class="dot-r" style="background:var(--celeste);"></div><span>Ellos ya le pagan a MU, Peebox, Quick — saben gestionar multi-proveedor</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--celeste);"></div><span>Pueden traer sus credenciales actuales → Picker las respeta si tienen mejor tarifa</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--celeste);"></div><span>Cada droguería es independiente → necesitan admin HQ + usuario operativo por tienda</span></div>
+          </div>
+        </div>
+        <div class="card" style="padding:14px 18px;">
+          <div class="lbl">Economía del afiliado</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+            <div style="background:var(--green-dim);border:1px solid var(--green-mid);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--green-text);margin-bottom:4px;">Pagan hoy (variable)</div>
+              <div style="font-size:22px;font-weight:900;color:var(--green-text);">400K–1M</div>
+              <div style="font-size:10px;color:var(--sub);font-weight:600;">COP/mes por domicilios</div>
+            </div>
+            <div style="background:var(--red-bg);border:1px solid var(--red-mid);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Rider fijo (lo evitan)</div>
+              <div style="font-size:22px;font-weight:900;color:var(--red);">2M–3M</div>
+              <div style="font-size:10px;color:var(--sub);font-weight:600;">COP/mes · costo fijo</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:12px;font-weight:700;color:var(--sub);">El afiliado ya adoptó el modelo variable → Picker no cambia el paradigma, lo mejora.</div>
+        </div>
+      </div>
+      <!-- RIGHT -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card" style="padding:14px 18px;border-top:3px solid var(--amber);">
+          <div class="lbl" style="color:hsl(43 100% 28%);">Techo de precio — línea roja</div>
+          <div style="margin-top:8px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center;">
+            <div style="background:var(--green-dim);border:1px solid var(--green-mid);border-radius:8px;padding:10px;"><div style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--green-text);margin-bottom:3px;">Dentro del techo</div><div style="font-size:22px;font-weight:900;color:var(--green-text);">8–10K</div><div style="font-size:10px;color:var(--sub);font-weight:600;">COP · atractivo</div></div>
+            <div style="font-size:20px;color:var(--border);">→</div>
+            <div style="background:var(--red-bg);border:1px solid var(--red-mid);border-radius:8px;padding:10px;"><div style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--red);margin-bottom:3px;">Sobre el techo</div><div style="font-size:22px;font-weight:900;color:var(--red);">15K+</div><div style="font-size:10px;color:var(--sub);font-weight:600;">COP · no se vende</div></div>
+          </div>
+          <div style="margin-top:10px;background:var(--amber-bg);border-radius:8px;padding:9px 12px;font-size:12px;color:hsl(43 100% 28%);font-weight:700;">Con ticket de 70–100K COP, el envío no puede pasar el ~10% del valor de la mercancía. Aún falta confirmar distancia promedio para validar si Picker cabe o no.</div>
+        </div>
+        <div class="card" style="padding:14px 18px;">
+          <div class="lbl">Canales digitales de Coopidrogas</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:16px;flex-shrink:0;">🛒</span><div><div style="font-size:12.5px;font-weight:800;">PharmaExpress</div><div style="font-size:11px;color:var(--sub);">Marketplace propio · canal principal para integración Picker</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:16px;flex-shrink:0;">🏍️</span><div><div style="font-size:12.5px;font-weight:800;">Rappi (RappiTenderos) · Didi (próximo)</div><div style="font-size:11px;color:var(--sub);">Marketplaces terceros · no son el canal propio</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:16px;flex-shrink:0;">📦</span><div><div style="font-size:12.5px;font-weight:800;">MercadoLibre + Falabella</div><div style="font-size:11px;color:var(--sub);">En proceso de integración</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:16px;flex-shrink:0;">💬</span><div><div style="font-size:12.5px;font-weight:800;">WhatsApp + call centers propios</div><div style="font-size:11px;color:var(--sub);">Canal fuerte en droguerías grandes · integración manual posible</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--text);border-radius:12px;padding:14px 18px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--celeste);margin-bottom:6px;">Cita textual de Camilo (sesión 1)</div>
+          <div style="font-size:14px;font-weight:700;color:white;line-height:1.5;font-style:italic;">"Como te digo, justamente estábamos pensando en obtener y buscar eso y lo estábamos buscando. Realmente estábamos buscando tener un orquestador en temas de delivery. Entonces me parece bien."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 3 · CÓMO CORRER LA DEMO ═══ -->
+<div class="slide">
+  <div class="content" style="display:flex;flex-direction:column;gap:13px;">
+    <div>
+      <div class="tag blue">Demo · Sesión 2</div>
+      <h2>Qué mostrar, en qué orden y qué NO mostrar todavía.</h2>
+    </div>
+    <div class="grid2" style="gap:14px;align-items:start;">
+      <!-- ORDEN DE DEMO -->
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px;">Secuencia recomendada</div>
+
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-left:3px solid var(--celeste);">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--celeste);color:white;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;margin-bottom:3px;">Asignación en tiempo real — abrir aquí</div>
+            <div style="font-size:12px;color:var(--sub);line-height:1.45;">Simula un envío en vivo. Que vean cómo el orquestador tira a múltiples carriers simultáneamente y asigna al primero disponible. Ese es su dolor #1 — resuélvelo en 60 segundos.</div>
+            <div style="margin-top:5px;"><span class="badge b">Pain resuelto visualmente</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-left:3px solid var(--celeste);">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--celeste);color:white;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;margin-bottom:3px;">Multi-nivel: admin HQ + usuario droguería</div>
+            <div style="font-size:12px;color:var(--sub);line-height:1.45;">Mostrar la vista de Camilo (admin central): cuántas droguerías activas, pedidos hoy, costos por tienda. Luego cambiar a vista de una droguería operativa. Que vea exactamente cómo gestionaría su red.</div>
+            <div style="margin-top:5px;"><span class="badge b">Encaja en su modelo de facturación</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-left:3px solid var(--celeste);">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--celeste);color:white;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;margin-bottom:3px;">Credenciales externas</div>
+            <div style="font-size:12px;color:var(--sub);line-height:1.45;">Mostrar que pueden mantener sus tarifas con MU/Peebox/Quick si son mejores que las de Picker. Elimina la objeción de "ya tenemos tarifas negociadas".</div>
+            <div style="margin-top:5px;"><span class="badge b">Reduce riesgo de fricción en precios</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-left:3px solid var(--green);">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--green);color:white;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;margin-bottom:3px;">MyFleet — si alguna droguería tiene repartidor propio</div>
+            <div style="font-size:12px;color:var(--sub);line-height:1.45;">Algunas droguerías grandes tienen su propia flota. Mostrar cómo MyFleet los digitaliza y los mete al orquestador como primer jugador prioritario.</div>
+            <div style="margin-top:5px;"><span class="badge g">Solo si Camilo menciona droguerías con flota</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUÉ NO HACER + REFERENCIA -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card" style="padding:14px 18px;background:var(--red-bg);border-color:var(--red-mid);">
+          <div class="lbl" style="color:var(--red);">⛔ No hacer en esta sesión</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px;">
+            <div class="row"><div class="dot-r" style="background:var(--red);"></div><span style="font-weight:700;color:var(--text);">No compartir tarifario todavía — falta ticket promedio y distancias para hacer una propuesta que encaje en los 8–10K COP</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--red);"></div><span style="font-weight:700;color:var(--text);">No mencionar MRR ($1,000 COP/local/mes × 5,000 droguerías) hasta calificar si Camilo tiene presupuesto</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--red);"></div><span style="font-weight:700;color:var(--text);">No cerrar propuesta formal hoy — aún no tienes los datos para que los números cuadren</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:14px 18px;border-top:3px solid var(--amber);">
+          <div class="lbl" style="color:hsl(43 100% 28%);">Lo primero que debes hacer al abrir la call</div>
+          <div style="margin-top:8px;background:var(--amber-bg);border-radius:8px;padding:11px 14px;font-size:13px;font-weight:700;color:hsl(43 100% 25%);line-height:1.5;font-style:italic;">"Camilo, antes de arrancar — te agradezco que trajeras a tu colega. ¿Me cuentas quién está con nosotros y su rol en el equipo?"</div>
+          <div style="margin-top:8px;font-size:12px;color:var(--sub);font-weight:600;">Necesitas saber si la persona nueva es Economic Buyer, técnica u operativa. Define si adaptas el tono de la demo.</div>
+        </div>
+
+        <div class="card" style="padding:14px 18px;">
+          <div class="lbl">Referencia a usar para credibilidad</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px;">
+            <div style="background:var(--bg);border-radius:8px;padding:9px 12px;">
+              <div style="font-size:12.5px;font-weight:800;">Pizza Hut Colombia</div>
+              <div style="font-size:11.5px;color:var(--sub);margin-top:2px;">Mismo modelo: central paga, locales operan. Algunos con repartidor propio + orquestador como respaldo. Usa este ejemplo para el modelo de Coopidrogas.</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:9px 12px;">
+              <div style="font-size:12.5px;font-weight:800;">Cruz Verde Colombia — en negociación avanzada</div>
+              <div style="font-size:11.5px;color:var(--sub);margin-top:2px;">Misma vertical (farmacias CO). No revelar detalles, pero mencionar que ya están trabajando con farmacias grandes en el país.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--text);border-radius:12px;padding:12px 16px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--celeste);margin-bottom:6px;">Métrica de cierre para la demo</div>
+          <div style="font-size:13.5px;font-weight:800;color:white;line-height:1.4;">Con 1 proveedor: 82–83% fulfillment. Con Picker (multi-carrier): <span style="color:hsl(162 80% 65%);">95–98% fulfillment.</span> Ese delta es venta perdida hoy.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 4 · PREGUNTAS CRÍTICAS PENDIENTES ═══ -->
+<div class="slide">
+  <div class="content" style="display:flex;flex-direction:column;gap:13px;">
+    <div>
+      <div class="tag amber">Discovery pendiente</div>
+      <h2>Todo lo que falta confirmar para construir la propuesta.</h2>
+    </div>
+    <div class="grid2" style="gap:14px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+
+        <div class="q-block red">
+          <div class="q-cat">🔴 Crítico para la propuesta (sin esto no puedes hacer números)</div>
+          <ul>
+            <li>¿Cuál es el ticket promedio por droguería? ¿Varía mucho entre Bogotá y municipios pequeños?</li>
+            <li>¿Cuál es la distancia promedio de un domicilio? ¿Tienen ese dato o lo estiman?</li>
+            <li>¿Las tarifas actuales con MU/Peebox/Quick incluyen seguro de mercancía o va aparte?</li>
+            <li>¿Cuántos domicilios hace una droguería promedio al mes? ¿Y una grande?</li>
+          </ul>
+        </div>
+
+        <div class="q-block amber">
+          <div class="q-cat">🟡 Proceso de decisión (calificar Economic Buyer)</div>
+          <ul>
+            <li>¿Quién es la persona que se sumó hoy y qué hace en Coopidrogas?</li>
+            <li>¿Camilo tiene presupuesto propio para activar un piloto o requiere aprobación del CEO Daniel Quirós?</li>
+            <li>¿Tienen ya presupuesto asignado para tecnología de delivery o es algo que hay que justificar?</li>
+            <li>¿Cuál es el proceso para activar un nuevo proveedor — quién firma, cuánto tarda?</li>
+          </ul>
+        </div>
+
+        <div class="q-block">
+          <div class="q-cat">🔵 Operación y escala del piloto</div>
+          <ul>
+            <li>¿El piloto sería solo con droguerías de Bogotá o quieren arrancar con una ciudad pequeña?</li>
+            <li>¿Cuántas droguerías incluirían en fase 1? ¿Tienen alguna región prioritaria?</li>
+            <li>¿PharmaExpress tiene API o hay que integrarse por otro canal (manual primero)?</li>
+          </ul>
+        </div>
+
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+
+        <div class="q-block green">
+          <div class="q-cat">🟢 Competencia y alternativas</div>
+          <ul>
+            <li>¿Están evaluando alguna otra solución de orquestación además de Picker?</li>
+            <li>¿MU, Rappi o Cabify les han ofrecido algo similar a un orquestador multi-carrier?</li>
+            <li>¿Lopido.com tiene flota propia integrada? ¿Cómo funcionaría Picker junto a Lopido?</li>
+          </ul>
+        </div>
+
+        <div class="q-block amber">
+          <div class="q-cat">🟡 Flota propia (oportunidad MyFleet)</div>
+          <ul>
+            <li>¿Hay droguerías que ya tienen su propio repartidor/moto y lo gestionan ellas mismas?</li>
+            <li>¿Coopidrogas tiene alguna flota centralizada para distribución que pueda digitalizarse?</li>
+          </ul>
+        </div>
+
+        <div class="card" style="padding:14px 18px;background:var(--green-dim);border-color:var(--green-mid);margin-top:2px;">
+          <div class="lbl" style="color:var(--green-text);">Cómo pedir esta info sin sonar a interrogatorio</div>
+          <div style="margin-top:6px;background:var(--card);border-radius:8px;padding:11px 14px;font-size:13px;font-weight:700;color:var(--text);line-height:1.5;font-style:italic;">"Camilo, para que la propuesta que te llevo en sesión 3 encaje exactamente en el modelo financiero de ustedes, necesito entender dos datos: ¿cuál es el ticket promedio de un domicilio típico y cuántos km recorre en promedio? Con eso construyo los números y te los presento la próxima semana."</div>
+        </div>
+
+        <div style="background:var(--text);border-radius:12px;padding:12px 16px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--celeste);margin-bottom:6px;">Al cerrar la sesión — pedir esto</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div class="row" style="color:hsl(212 50% 75%);"><div class="dot-r" style="background:var(--celeste);"></div><span>Confirmar sesión 3: propuesta en 5–7 días</span></div>
+            <div class="row" style="color:hsl(212 50% 75%);"><div class="dot-r" style="background:var(--celeste);"></div><span>Pedir datos: ticket promedio + distancia promedio por email</span></div>
+            <div class="row" style="color:hsl(212 50% 75%);"><div class="dot-r" style="background:var(--celeste);"></div><span>Preguntar si la persona nueva debe estar en sesión 3</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 5 · MEDDPICC ACTUALIZADO ═══ -->
+<div class="slide">
+  <div class="content" style="display:flex;flex-direction:column;gap:13px;">
+    <div>
+      <div class="tag blue">MEDDPICC · Estado al 30 jun 2026</div>
+      <h2>Qué está calificado, qué falta y dónde está el riesgo real.</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <table class="med">
+        <thead>
+          <tr>
+            <th style="width:130px;">Elemento</th>
+            <th style="width:80px;">Status</th>
+            <th>Lo que sabemos</th>
+            <th style="width:200px;">Lo que falta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Metrics</td>
+            <td><span class="badge g">✅ Sólido</span></td>
+            <td>5,000+ droguerías. Techo 8–10K COP/envío. Ticket 70–100K COP. 20–30 min espera hora pico. Costo fijo evitado: 2–3M COP/mes.</td>
+            <td>Ticket exacto, distancia promedio, volumen de envíos/mes por droguería.</td>
+          </tr>
+          <tr>
+            <td>Economic Buyer</td>
+            <td><span class="badge a">⚠️ Sin confirmar</span></td>
+            <td>Camilo es Director de Ecommerce — opera y lidera. CEO Daniel Quirós tiene mandato de digitalización.</td>
+            <td>¿Puede Camilo aprobar el piloto solo? ¿Quién es la persona nueva en sesión 2?</td>
+          </tr>
+          <tr>
+            <td>Decision Criteria</td>
+            <td><span class="badge g">✅ Claro</span></td>
+            <td>1) Costo ≤ 8–10K COP/envío. 2) Asignación rápida hora pico. 3) Multi-nivel admin + droguería. 4) Modelo de facturación centralizada.</td>
+            <td>Confirmar si hay criterio técnico (API, integración PharmaExpress).</td>
+          </tr>
+          <tr>
+            <td>Decision Process</td>
+            <td><span class="badge a">⚠️ Parcial</span></td>
+            <td>Sesión 1 → Demo → Propuesta personalizada (máx 3 sesiones). Camilo lleva a alguien a sesión 2.</td>
+            <td>¿Quién aprueba la contratación? ¿Hay procurement o área legal involucrada?</td>
+          </tr>
+          <tr>
+            <td>Paper Process</td>
+            <td><span class="badge r">❌ Desconocido</span></td>
+            <td>—</td>
+            <td>¿Cómo activan nuevos proveedores? ¿Hay contrato marco o proceso legal largo?</td>
+          </tr>
+          <tr>
+            <td>Pain</td>
+            <td><span class="badge g">✅ Confirmado</span></td>
+            <td>20–30 min de espera hora pico. Modelo variable adoptado. Buscan activamente un orquestador.</td>
+            <td>Cuantificar pedidos perdidos por no-asignación (oportunidad del business case).</td>
+          </tr>
+          <tr>
+            <td>Champion</td>
+            <td><span class="badge g">✅ Camilo</span></td>
+            <td>Dijo explícitamente: "me gusta la solución" y "justamente estábamos buscando esto". Trae refuerzos a sesión 2.</td>
+            <td>Confirmar que tiene poder de avanzar o quién lo complementa.</td>
+          </tr>
+          <tr style="border:none;">
+            <td>Competition</td>
+            <td><span class="badge a">⚠️ Sin mapear</span></td>
+            <td>Tienen tarifas con MU, Peebox, Quick. No mencionó evaluar otros orquestadores explícitamente.</td>
+            <td>¿Alguien más les ha ofrecido orquestación? ¿Rappi/MU tienen alguna propuesta activa?</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px;">
+        <div class="card" style="padding:12px 16px;background:var(--green-dim);border-color:var(--green-mid);text-align:center;">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--green-text);margin-bottom:4px;">Fortaleza del deal</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">Pain confirmado + inbound + compra activa declarada</div>
+        </div>
+        <div class="card" style="padding:12px 16px;background:var(--amber-bg);border-color:var(--amber-mid);text-align:center;">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:hsl(43 100% 28%);margin-bottom:4px;">Riesgo #1</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">Precio: si el fee Picker sube el total por encima de 10K COP, el deal cae</div>
+        </div>
+        <div class="card" style="padding:12px 16px;background:var(--red-bg);border-color:var(--red-mid);text-align:center;">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Riesgo #2</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">Economic Buyer desconocido — la persona nueva puede bloquear o acelerar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 6 · APERTURA + CIERRE ═══ -->
+<div class="slide">
+  <div class="content" style="display:flex;flex-direction:column;gap:13px;">
+    <div>
+      <div class="tag green">Guía de sesión</div>
+      <h2>Cómo abrir, qué preguntar primero y cómo cerrar la call.</h2>
+    </div>
+    <div class="grid2" style="gap:14px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:var(--text);border-radius:14px;padding:16px 20px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--celeste);margin-bottom:10px;">🎙 Apertura — primeros 3 minutos</div>
+          <div style="font-size:13.5px;font-weight:600;color:white;line-height:1.7;">
+            "Camilo, qué gusto verte. Antes de arrancar — muchas gracias por traer a tu colega. ¿Nos cuentas quién nos acompaña y qué hace en Coopidrogas?<br/><br/>
+            [Escuchar · adaptar tono según rol]<br/><br/>
+            En la sesión anterior hablamos del dolor en hora pico — esos 20 o 30 minutos esperando un repartidor cuando la droguería ya tiene el pedido listo. Quiero que hoy vean exactamente cómo resuelve eso Picker en tiempo real. ¿Los llevo directo a la plataforma?"
+          </div>
+        </div>
+
+        <div class="card" style="padding:14px 18px;border-top:3px solid var(--celeste);">
+          <div class="lbl">Durante la demo — preguntas de validación</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px;">
+            <div class="row"><div class="dot-r" style="background:var(--celeste);"></div><span><strong>Al mostrar asignación:</strong> "¿Cuánto tiempo esperan hoy en promedio antes de que alguien tome el pedido?"</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--celeste);"></div><span><strong>Al mostrar admin HQ:</strong> "¿Así visualizarías tú la operación de toda la red en Coopidrogas?"</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--celeste);"></div><span><strong>Al mostrar credenciales:</strong> "¿Las tarifas que tienen con MU y Peebox son mejores que las nuestras? Podemos usar las suyas."</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card" style="padding:14px 18px;border-top:3px solid var(--green);">
+          <div class="lbl" style="color:var(--green-text);">Preguntas de discovery — intercalar natural en la demo</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px;">
+            <div class="row"><div class="dot-r" style="background:var(--green);"></div><span>¿Cuántos domicilios hace en promedio una droguería al mes? ¿Y las más grandes?</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--green);"></div><span>¿Cuántos km recorre un domicilio típico? ¿Tienen ese dato?</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--green);"></div><span>¿PharmaExpress tiene API de integración o el ingreso de pedidos es manual hoy?</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--amber);"></div><span>¿Para activar un nuevo proveedor de tecnología, ¿cómo es el proceso interno — hay área de compras o TI que deba validar?</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--amber);"></div><span>¿Hay alguna otra solución que estén evaluando para este mismo problema?</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:14px 18px;background:var(--green-dim);border-color:var(--green-mid);">
+          <div class="lbl" style="color:var(--green-text);">🎯 Cierre de sesión — últimos 5 minutos</div>
+          <div style="margin-top:8px;background:var(--card);border-radius:8px;padding:11px 14px;font-size:13px;font-weight:700;color:var(--text);line-height:1.6;font-style:italic;">
+            "Camilo, me parece que hay fit claro entre lo que Picker hace y lo que buscan. Para llevarte una propuesta financiera que tenga sentido con el modelo de Coopidrogas, necesito dos datos: ticket promedio y distancia promedio por domicilio. ¿Puedes mandarme eso esta semana? Con eso tengo propuesta lista para que la revisemos en [fecha] — ¿les queda bien?"
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;">
+            <div class="row"><div class="dot-r" style="background:var(--green);"></div><span style="font-weight:700;color:var(--text);">Agendar sesión 3 antes de colgar</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--green);"></div><span style="font-weight:700;color:var(--text);">Confirmar si la persona nueva debe estar en sesión 3</span></div>
+            <div class="row"><div class="dot-r" style="background:var(--green);"></div><span style="font-weight:700;color:var(--text);">Pedir email para mandar resumen + datos requeridos</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #deck -->
+
+<div id="slide-num">1 / 6</div>
+<div id="nav">
+  <button class="nav-btn" id="prev" onclick="move(-1)" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div id="indicators"></div>
+  <button class="nav-btn" id="next" onclick="move(1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide'), total = slides.length; let cur = 0;
+  const iw = document.getElementById('indicators');
+  slides.forEach((_,i) => { const d = document.createElement('div'); d.className='dot'+(i===0?' on':''); d.onclick=()=>go(i); iw.appendChild(d); });
+  function go(n) { slides[cur].classList.remove('active'); slides[cur].classList.add('exit'); setTimeout(()=>slides[cur].classList.remove('exit'),420); cur=n; slides[cur].classList.add('active'); document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur)); document.getElementById('slide-num').textContent=`${cur+1} / ${total}`; document.getElementById('prev').disabled=cur===0; document.getElementById('next').disabled=cur===total-1; }
+  function move(d) { if(cur+d>=0&&cur+d<total) go(cur+d); }
+  document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowDown') move(1); if(e.key==='ArrowLeft'||e.key==='ArrowUp') move(-1); });
+</script>
+</body>
+</html>
