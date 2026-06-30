@@ -67,48 +67,55 @@
     .slides-wrapper { flex: 1; overflow: hidden; position: relative; }
     .slide {
       position: absolute; inset: 0;
-      padding: 0.85rem 2rem;
+      padding: 0.9rem 2rem;
       overflow: hidden;
-      display: none; flex-direction: column; gap: 0.5rem;
+      display: none; flex-direction: column; gap: 0.65rem;
     }
     .slide.active { display: flex; }
 
     .slide-header { display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0; }
-    .slide-tag { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.15rem; }
-    .slide-header h1 { font-size: 1.25rem; font-weight: 700; }
+    .slide-tag { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.18rem; }
+    .slide-header h1 { font-size: 1.45rem; font-weight: 700; }
+    .q-slide .slide-header h1 { font-size: 1.25rem; }
+    .q-slide .slide-tag { font-size: 0.62rem; }
     .slide-header .right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
     .date { font-size: 0.7rem; color: var(--muted); }
 
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.9rem; flex-shrink: 0; }
-    .card h3 { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.35rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1.1rem; flex-shrink: 0; }
+    .card h3 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.45rem; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; flex-shrink: 0; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; flex-shrink: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; flex-shrink: 0; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.65rem; flex-shrink: 0; }
 
-    .chips-row { display: flex; gap: 0.55rem; flex-shrink: 0; }
-    .stat-chip { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.45rem 0.8rem; flex: 1; }
-    .stat-chip .value { font-size: 1.1rem; font-weight: 700; color: var(--celeste); line-height: 1.2; }
-    .stat-chip .label { font-size: 0.62rem; color: var(--muted); margin-top: 0.1rem; }
+    .chips-row { display: flex; gap: 0.65rem; flex-shrink: 0; }
+    .stat-chip { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 1rem; flex: 1; }
+    .stat-chip .value { font-size: 1.4rem; font-weight: 700; color: var(--celeste); line-height: 1.2; }
+    .stat-chip .label { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
 
-    .badge { display: inline-block; border-radius: 20px; font-size: 0.66rem; font-weight: 600; padding: 0.18rem 0.55rem; }
+    .badge { display: inline-block; border-radius: 20px; font-size: 0.72rem; font-weight: 600; padding: 0.22rem 0.65rem; }
     .badge-green { background: var(--green-bg); color: var(--green-text); }
     .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
     .badge-red { background: var(--red-bg); color: var(--red-text); }
     .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
     .badge-muted { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); text-align: left; padding: 0.28rem 0.5rem; border-bottom: 1px solid var(--border); }
-    td { padding: 0.28rem 0.5rem; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.35; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); text-align: left; padding: 0.35rem 0.65rem; border-bottom: 1px solid var(--border); }
+    td { padding: 0.38rem 0.65rem; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.4; }
     tr:last-child td { border-bottom: none; }
     td strong { font-weight: 600; }
 
-    .pain-block { border-radius: 8px; padding: 0.5rem 0.85rem; border-left: 3px solid; flex-shrink: 0; }
+    .pain-block { border-radius: 8px; padding: 0.7rem 1.1rem; border-left: 3px solid; flex-shrink: 0; }
     .pain-block.red { background: var(--red-bg); border-color: var(--red); }
     .pain-block.amber { background: var(--amber-bg); border-color: var(--amber); }
     .pain-block.blue { background: var(--blue-bg); border-color: var(--celeste); }
-    .pain-title { font-size: 0.78rem; font-weight: 700; margin-bottom: 0.2rem; }
-    .pain-desc { font-size: 13px; color: var(--sub); line-height: 1.38; }
+    .pain-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .pain-desc { font-size: 14px; color: var(--sub); line-height: 1.45; }
+
+    /* ===== Q-SLIDE OVERRIDES — Sesión 2 ⚡ y Q Tracker mantienen tamaño compacto ===== */
+    .q-slide { gap: 0.5rem; }
+    .q-slide .card { padding: 0.65rem 0.9rem; }
+    .q-slide .card h3 { font-size: 0.62rem; margin-bottom: 0.35rem; }
 
     .q-row { display: flex; align-items: flex-start; gap: 0.45rem; padding: 0.28rem 0; border-bottom: 1px solid var(--border); }
     .q-row:last-child { border-bottom: none; }
@@ -120,30 +127,34 @@
     .q-critica { background: hsl(346 100% 98%); border-left: 2px solid var(--red); padding-left: 0.35rem; margin-left: -0.35rem; border-radius: 0 3px 3px 0; }
     .q-importante { background: var(--amber-bg); border-left: 2px solid var(--amber); padding-left: 0.35rem; margin-left: -0.35rem; border-radius: 0 3px 3px 0; }
 
-    .demo-item { display: flex; gap: 0.65rem; align-items: flex-start; padding: 0.32rem 0; }
-    .demo-num { width: 22px; height: 22px; border-radius: 50%; background: var(--celeste); color: white; font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-    .demo-content strong { font-size: 13px; font-weight: 700; display: block; line-height: 1.3; }
-    .demo-content span { font-size: 12px; color: var(--sub); }
+    .demo-item { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.45rem 0; }
+    .demo-num { width: 28px; height: 28px; border-radius: 50%; background: var(--celeste); color: white; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .demo-content strong { font-size: 14px; font-weight: 700; display: block; line-height: 1.35; }
+    .demo-content span { font-size: 13px; color: var(--sub); }
 
-    .medd-row { display: grid; grid-template-columns: 105px 78px 1fr; gap: 0.65rem; padding: 0.32rem 0; border-bottom: 1px solid var(--border); align-items: start; }
+    .medd-row { display: grid; grid-template-columns: 120px 90px 1fr; gap: 0.75rem; padding: 0.42rem 0; border-bottom: 1px solid var(--border); align-items: start; }
     .medd-row:last-child { border-bottom: none; }
-    .medd-label { font-size: 0.68rem; font-weight: 700; }
-    .medd-desc { font-size: 12px; color: var(--sub); line-height: 1.35; }
+    .medd-label { font-size: 0.74rem; font-weight: 700; }
+    .medd-desc { font-size: 13px; color: var(--sub); line-height: 1.4; }
 
-    .quote { background: var(--text); color: white; border-radius: 10px; padding: 0.6rem 1rem; flex-shrink: 0; }
-    .quote p { font-style: italic; font-size: 0.88rem; line-height: 1.4; }
-    .quote-attr { font-size: 0.65rem; color: var(--muted); margin-top: 0.22rem; }
+    .quote { background: var(--text); color: white; border-radius: 10px; padding: 0.75rem 1.2rem; flex-shrink: 0; }
+    .quote p { font-style: italic; font-size: 1rem; line-height: 1.45; }
+    .quote-attr { font-size: 0.7rem; color: var(--muted); margin-top: 0.28rem; }
 
-    .flow { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
-    .flow-step { background: var(--blue-bg); color: var(--blue-text); border-radius: 20px; font-size: 0.7rem; font-weight: 600; padding: 0.28rem 0.6rem; }
-    .flow-arrow { color: var(--muted); font-size: 0.78rem; }
+    .flow { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .flow-step { background: var(--blue-bg); color: var(--blue-text); border-radius: 20px; font-size: 0.76rem; font-weight: 600; padding: 0.35rem 0.75rem; }
+    .flow-arrow { color: var(--muted); font-size: 0.85rem; }
 
-    .pill-list { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-    .pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; font-size: 0.7rem; padding: 0.22rem 0.55rem; color: var(--sub); }
+    .pill-list { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; font-size: 0.75rem; padding: 0.28rem 0.65rem; color: var(--sub); }
 
-    .urgent-banner { background: var(--amber-bg); border: 1px solid var(--amber); border-radius: 8px; padding: 0.42rem 0.85rem; font-size: 13px; font-weight: 600; color: var(--amber-text); flex-shrink: 0; }
-    .success-block { background: var(--green-bg); border: 1px solid var(--green); border-left: 3px solid var(--green); border-radius: 8px; padding: 0.45rem 0.8rem; }
-    .risk-block { background: var(--amber-bg); border: 1px solid var(--amber); border-left: 3px solid var(--amber); border-radius: 8px; padding: 0.45rem 0.8rem; }
+    .urgent-banner { background: var(--amber-bg); border: 1px solid var(--amber); border-radius: 8px; padding: 0.5rem 1rem; font-size: 14px; font-weight: 600; color: var(--amber-text); flex-shrink: 0; }
+    .success-block { background: var(--green-bg); border: 1px solid var(--green); border-left: 3px solid var(--green); border-radius: 8px; padding: 0.55rem 1rem; }
+    .success-block strong { font-size: 14px; color: var(--green-text); }
+    .success-block p { font-size: 13px; margin-top: 0.25rem; color: var(--green-text); }
+    .risk-block { background: var(--amber-bg); border: 1px solid var(--amber); border-left: 3px solid var(--amber); border-radius: 8px; padding: 0.55rem 1rem; }
+    .risk-block strong { font-size: 14px; }
+    .risk-block p { font-size: 13px; margin-top: 0.25rem; }
 
     .flex-fill { flex: 1; overflow: hidden; }
     .inner-grid { display: flex; flex-direction: column; gap: 0.55rem; height: 100%; }
@@ -290,7 +301,7 @@
       <span class="flow-arrow">→</span>
       <span class="flow-step">Cada uno decide si hace delivery</span>
     </div>
-    <p style="font-size:12px;color:var(--sub);margin-top:0.4rem">Camilo no puede ordenar delivery a los afiliados — necesita una solución que adopten voluntariamente porque les ahorra dinero. Picker = herramienta pull, no push.</p>
+    <p style="font-size:13px;color:var(--sub);margin-top:0.5rem">Camilo no puede ordenar delivery a los afiliados — necesita una solución que adopten voluntariamente porque les ahorra dinero. Picker = herramienta pull, no push.</p>
   </div>
 
   <div class="card">
@@ -342,7 +353,7 @@
           <span class="flow-step">Solo lo que usó ese mes</span>
         </div>
       </div>
-      <p style="font-size:12px;color:var(--sub);margin-top:0.45rem">✅ Simplicidad para Picker: un solo punto de facturación con Coopidrogas HQ.</p>
+      <p style="font-size:13px;color:var(--sub);margin-top:0.5rem">✅ Simplicidad para Picker: un solo punto de facturación con Coopidrogas HQ.</p>
     </div>
   </div>
 
@@ -413,7 +424,7 @@
 </div>
 
 <!-- ===== SLIDE 5: SESIÓN 2 ⚡ ===== -->
-<div class="slide">
+<div class="slide q-slide">
   <div class="slide-header">
     <div><div class="slide-tag">Playbook — Prioridades Sesión 2</div><h1>¿Qué preguntar mañana?</h1></div>
     <div class="right" style="flex-direction:row;align-items:center;gap:0.35rem">
@@ -497,7 +508,7 @@
 </div>
 
 <!-- ===== SLIDE 6: Q TRACKER ===== -->
-<div class="slide">
+<div class="slide q-slide">
   <div class="slide-header">
     <div><div class="slide-tag">Playbook — Tracker Completo</div><h1>25 Preguntas Oficiales + Bloque Coopidrogas</h1></div>
     <div class="right" style="flex-direction:row;align-items:center;gap:0.35rem">
@@ -606,12 +617,12 @@
 
   <div class="grid-2">
     <div class="risk-block">
-      <strong style="font-size:13px">Riesgo Principal</strong>
-      <p style="font-size:12px;margin-top:0.2rem">Persona nueva puede ser bloqueador o EB. Si es EB y Camilo no tiene budget authority, el deal se alarga. Identificar rol antes de mostrar precio.</p>
+      <strong>Riesgo Principal</strong>
+      <p>Persona nueva puede ser bloqueador o EB. Si es EB y Camilo no tiene budget authority, el deal se alarga. Identificar rol antes de mostrar precio.</p>
     </div>
     <div class="success-block">
-      <strong style="font-size:13px;color:var(--green-text)">Palanca de Cierre</strong>
-      <p style="font-size:12px;margin-top:0.2rem;color:var(--green-text)">FarmaEnlace = referencia directa (misma cooperativa farmacéutica). Señal de compra explícita. Modelo billing ya validado.</p>
+      <strong>Palanca de Cierre</strong>
+      <p>FarmaEnlace = referencia directa (misma cooperativa farmacéutica). Señal de compra explícita. Modelo billing ya validado.</p>
     </div>
   </div>
 </div>
